@@ -1,3 +1,5 @@
+use std::{pin, task};
+
 use crate::headers::from_headers::*;
 use crate::prelude::*;
 use crate::resources::Database;
@@ -6,6 +8,7 @@ use crate::ResourceQuota;
 use azure_core::headers::{continuation_token_from_headers_optional, session_token_from_headers};
 use azure_core::{collect_pinned_stream, prelude::*, Request, Response};
 use chrono::{DateTime, Utc};
+use futures::Stream;
 
 #[derive(Debug, Clone)]
 pub struct ListDatabasesOptions {
@@ -31,6 +34,7 @@ impl ListDatabasesOptions {
         azure_core::headers::add_mandatory_header2(&self.max_item_count, request)?;
         Ok(())
     }
+<<<<<<< Updated upstream
 
     // pub fn stream(&self) -> impl Stream<Item = Result<ListDatabasesResponse, crate::Error>> + '_ {
     //     #[derive(Debug, Clone, PartialEq)]
@@ -72,6 +76,8 @@ impl ListDatabasesOptions {
     //         },
     //     )
     // }
+=======
+>>>>>>> Stashed changes
 }
 
 #[derive(Clone, PartialEq, PartialOrd, Debug)]
@@ -123,5 +129,15 @@ impl ListDatabasesResponse {
             continuation_token: continuation_token_from_headers_optional(&headers)?,
             gateway_version: gateway_version_from_headers(&headers)?.to_owned(),
         })
+    }
+}
+
+impl IntoIterator for ListDatabasesResponse {
+    type Item = Database;
+
+    type IntoIter = std::vec::IntoIter<Self::Item>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.databases.into_iter()
     }
 }
